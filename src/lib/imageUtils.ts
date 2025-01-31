@@ -35,7 +35,6 @@ export const processImage = async (
 
     // Resize image using pica
     await pica.resize(sourceImage, canvas, {
-        alpha: true,
         unsharpAmount: 80,
         unsharpRadius: 0.6,
         unsharpThreshold: 2,
