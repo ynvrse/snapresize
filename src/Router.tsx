@@ -5,8 +5,7 @@ import { Applayout } from './components/layouts/AppLayout';
 import NotFoundPage from './pages/404';
 
 import Dashboard from './pages/Dashboard';
-
-import Setting from './pages/Setting';
+import ImageUploader from './pages/ImageUploader';
 
 export const router = createBrowserRouter(
     [
@@ -19,28 +18,8 @@ export const router = createBrowserRouter(
                     element: <Dashboard />,
                 },
                 {
-                    path: 'master-data/products/:id?',
-                    element: <NotFoundPage />,
-                },
-                {
-                    path: 'master-data/products/:id?/details',
-                    element: <NotFoundPage />,
-                },
-                {
-                    path: 'master-data/products/:id?/add-images',
-                    element: <NotFoundPage />,
-                },
-                {
-                    path: 'carts',
-                    element: <NotFoundPage />,
-                },
-                {
-                    path: 'history-transactions',
-                    element: <NotFoundPage />,
-                },
-                {
-                    path: 'settings',
-                    element: <Setting />,
+                    path: 'cameras',
+                    element: <ImageUploader />,
                 },
             ],
         },

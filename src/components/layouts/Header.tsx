@@ -2,23 +2,15 @@ import { Icons } from '@/components/icons';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { sidebarMenu } from '@/config/sidebar-menu';
-import useAppConfig from '@/hooks/useStellaryst';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { ModeToggle } from '../mode-toggle';
 
 export function Header() {
-    const { stellaryst, fetchStellaryst } = useAppConfig();
     const [open, setOpen] = useState(false);
     const location = useLocation();
-
-    useEffect(() => {
-        if (location.pathname === '/settings') {
-            fetchStellaryst();
-        }
-    }, [location]);
 
     return (
         <header className="supports-backdrop-blur:bg-background/60 bg-background/90 sticky top-0 z-50 w-full border-b backdrop-blur">
@@ -29,16 +21,14 @@ export function Header() {
                         <div className="mr-6 flex items-center space-x-1">
                             <Icons.logo className="h-10 w-10" />
                             <span className="dark:text-accent text-primary inline-block text-lg font-bold">
-                                {stellaryst?.appName}
+                                SnapResize
                             </span>
                         </div>
                     </SheetTrigger>
                     <SheetContent side="left" className="pr-0 sm:max-w-xs">
                         <div onClick={() => setOpen(false)} className="flex items-center space-x-1">
                             <Icons.logo className="h-10 w-10" />
-                            <span className="dark:text-accent text-primary inline-block font-bold">
-                                {stellaryst?.appName}
-                            </span>
+                            <span className="dark:text-accent text-primary inline-block font-bold">SnapResize</span>
                         </div>
                         <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-8 pl-8">
                             <Accordion

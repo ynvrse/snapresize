@@ -1,4 +1,4 @@
-import { CirclePlus, Home, LucideIcon, ScrollText, Settings, ShoppingBasket } from 'lucide-react';
+import { BookImage, Camera, LucideIcon, Settings } from 'lucide-react';
 
 interface NavItem {
     title: string;
@@ -15,23 +15,13 @@ export const floatingMenu: NavItem[] = [
     {
         title: 'Dashboard',
         to: '/',
-        icon: Home,
+        icon: BookImage,
     },
     {
-        title: 'Product',
-        to: '/master-data/products',
-        icon: CirclePlus,
-    },
-    {
-        title: 'Cart',
-        to: '/carts',
-        icon: ShoppingBasket,
+        title: 'Camera',
+        to: '/cameras',
+        icon: Camera,
         isCenter: true,
-    },
-    {
-        title: 'Riwayat Transaksi',
-        to: '/history-transactions',
-        icon: ScrollText,
     },
     {
         title: 'Setting',

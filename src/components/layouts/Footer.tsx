@@ -1,18 +1,9 @@
 import { floatingMenu } from '@/config/floating-menu';
-import useStellaryst from '@/hooks/useStellaryst';
 import { cn } from '@/lib/utils';
-import { useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 
 export function Footer() {
-    const { stellaryst, fetchStellaryst } = useStellaryst();
     const location = useLocation();
-
-    useEffect(() => {
-        if (location.pathname === '/settings') {
-            fetchStellaryst();
-        }
-    }, [location]);
 
     return (
         <footer>
@@ -22,16 +13,16 @@ export function Footer() {
                         <p className="text-muted-foreground mb-2 text-center text-sm leading-loose font-light">
                             Built by{' '}
                             <a
-                                href={stellaryst?.gitHub}
+                                href="https://github.com/ynvrse"
                                 target="_blank"
                                 rel="noreferrer"
                                 className="font-medium underline underline-offset-4"
                             >
-                                {stellaryst?.owner}
+                                ynvrse
                             </a>
                             . The source code is available on{' '}
                             <a
-                                href={stellaryst?.sourceCode}
+                                href="https://github.com/ynvrse/snapresize"
                                 target="_blank"
                                 rel="noreferrer"
                                 className="font-medium underline underline-offset-4"
