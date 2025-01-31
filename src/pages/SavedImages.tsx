@@ -4,13 +4,13 @@ import LoadingScreen from '@/components/LoadingScreen';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState } from 'react';
 
-export default function Dashboard() {
+export default function SavedImages() {
     const [loading, setLoading] = useState(false);
     if (loading) return <LoadingScreen loading={loading} />;
     return (
         <>
             <PageHeader>
-                <PageHeaderHeading className="flex w-full justify-between">Dashboard</PageHeaderHeading>
+                <PageHeaderHeading className="flex w-full justify-between">Saved Images</PageHeaderHeading>
             </PageHeader>
             <Card>
                 <CardHeader>

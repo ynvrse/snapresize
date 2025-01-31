@@ -4,8 +4,9 @@ import { Applayout } from './components/layouts/AppLayout';
 
 import NotFoundPage from './pages/404';
 
-import Dashboard from './pages/Dashboard';
 import ImageUploader from './pages/ImageUploader';
+import SavedImages from './pages/SavedImages';
+import Setting from './pages/Setting';
 
 export const router = createBrowserRouter(
     [
@@ -15,11 +16,15 @@ export const router = createBrowserRouter(
             children: [
                 {
                     path: '',
-                    element: <Dashboard />,
+                    element: <ImageUploader />,
                 },
                 {
-                    path: 'cameras',
-                    element: <ImageUploader />,
+                    path: 'saved-images',
+                    element: <SavedImages />,
+                },
+                {
+                    path: 'settings',
+                    element: <Setting />,
                 },
             ],
         },

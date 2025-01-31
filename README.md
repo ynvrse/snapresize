@@ -1,4 +1,4 @@
-# Stellaryst - Mobile-First PWA Development Starter Kit
+# SnapResize - A Fast & Smart Image Resizer
 
 Stellaryst is a modern starter kit specifically designed building and deploying mobile-first Progressive Web Applications (PWA). It combines React + typescript + shadcn/ui + tailwind css v4 + vitePWA + github pages. This starter kit is designed to help you quickly set up a new project with a clean and modern codebase, making it easy to focus on building your application's features and functionality.
 

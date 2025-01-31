@@ -1,7 +1,7 @@
-// utils/imageUtils.ts
+// imageUtils.ts
 import Pica from 'pica';
 
-const pica = new Pica({
+export const pica = new Pica({
     features: ['js', 'wasm', 'cib'],
 });
 
@@ -14,15 +14,12 @@ export interface ProcessedImage {
 
 export const processImage = async (
     file: File,
-    options: {
-        targetWidth: number;
-        quality: number;
-        format: 'image/jpeg' | 'image/png' | 'image/webp';
-    },
+    targetWidth: number,
+    quality: number,
+    format: string = 'image/jpeg',
 ): Promise<ProcessedImage> => {
     // Create source image
     const sourceImage = await createImageBitmap(file);
-    const { targetWidth, quality, format } = options;
 
     // Calculate height maintaining aspect ratio
     const aspectRatio = sourceImage.height / sourceImage.width;
@@ -52,7 +49,7 @@ export const processImage = async (
     };
 };
 
-export const downloadImage = (blob: Blob, fileName: string) => {
+export const downloadFile = (blob: Blob, fileName: string) => {
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = fileName;
@@ -61,16 +58,8 @@ export const downloadImage = (blob: Blob, fileName: string) => {
     document.body.removeChild(link);
 };
 
-export const getImageDimensions = (file: File): Promise<{ width: number; height: number }> => {
-    return new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => {
-            URL.revokeObjectURL(img.src);
-            resolve({
-                width: img.width,
-                height: img.height,
-            });
-        };
-        img.src = URL.createObjectURL(file);
+export const cleanupURLs = (...urls: (string | null | undefined)[]) => {
+    urls.forEach((url) => {
+        if (url) URL.revokeObjectURL(url);
     });
 };
