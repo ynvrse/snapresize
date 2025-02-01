@@ -8,6 +8,22 @@ export interface Stellaryst {
     updatedAt: Date | null;
 }
 
+export interface StoredImage {
+    id?: number;
+    name: string;
+    base64: string;
+    type: string;
+    date: Date;
+}
+
+export interface StoredSetting {
+    id?: number;
+    size: number;
+    quality: number;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
 export interface DatabaseSchema {
     stellaryst: Stellaryst;
 }

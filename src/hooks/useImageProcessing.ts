@@ -2,6 +2,7 @@
 import { useStoredImages } from '@/hooks/useStoredImage';
 import { cleanupURLs, ProcessedImage, processImage } from '@/lib/imageUtils';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 interface UseImageProcessingProps {
@@ -10,6 +11,7 @@ interface UseImageProcessingProps {
 }
 
 export const useImageProcessing = ({ size, quality }: UseImageProcessingProps) => {
+    const navigate = useNavigate();
     const [imgTemp, setImgTemp] = useState<string | null>(null);
     const [originalFile, setOriginalFile] = useState<File | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -45,6 +47,7 @@ export const useImageProcessing = ({ size, quality }: UseImageProcessingProps) =
         try {
             await saveImageToStore(processedImage.blob, `processed_${originalFile.name}`, processedImage.blob.type);
             toast.success('Image saved successfully!');
+            navigate('/saved-images');
             return true;
         } catch (error) {
             console.error('Error saving processed image:', error);

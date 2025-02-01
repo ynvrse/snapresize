@@ -1,9 +1,12 @@
 // useStoredImages.ts
 import { blobToBase64 } from '@/lib/imageUtils';
-import { imageDB, StoredImage } from '@/lib/indexDBUtils';
+import { DB } from '@/lib/indexDBUtils';
+import { StoredImage } from '@/types';
 import { useCallback, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 export const useStoredImages = () => {
+    const location = useLocation();
     const [storedImages, setStoredImages] = useState<StoredImage[]>([]);
     const [latestImage, setLatestImage] = useState<StoredImage | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -11,7 +14,7 @@ export const useStoredImages = () => {
     const loadLatestImage = useCallback(async () => {
         setIsLoading(true);
         try {
-            const image = await imageDB.getLatestImage();
+            const image = await DB.getLatestImage();
             setLatestImage(image);
         } catch (error) {
             console.error('Error loading latest image:', error);
@@ -23,7 +26,7 @@ export const useStoredImages = () => {
     const loadStoredImages = useCallback(async () => {
         setIsLoading(true);
         try {
-            const images = await imageDB.getAllImages();
+            const images = await DB.getAllImages();
             setStoredImages(images);
         } catch (error) {
             console.error('Error loading stored images:', error);
@@ -35,7 +38,7 @@ export const useStoredImages = () => {
     const saveImageToStore = async (blob: Blob, name: string, type: string = blob.type) => {
         try {
             const base64 = await blobToBase64(blob);
-            await imageDB.saveImage({
+            await DB.saveImage({
                 name,
                 base64,
                 type,
@@ -51,7 +54,7 @@ export const useStoredImages = () => {
 
     const deleteStoredImage = async (id: number) => {
         try {
-            await imageDB.deleteImage(id);
+            await DB.deleteImage(id);
             await loadStoredImages(); // Refresh the list
             await loadLatestImage();
         } catch (error) {
@@ -64,7 +67,7 @@ export const useStoredImages = () => {
     useEffect(() => {
         loadStoredImages();
         loadLatestImage();
-    }, [loadStoredImages, loadLatestImage]);
+    }, [loadStoredImages, loadLatestImage, location]);
 
     return {
         storedImages,

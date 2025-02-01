@@ -1,26 +1,17 @@
-// indexDBUtils.ts
+import { StoredImage, StoredSetting } from '@/types';
+import { toast } from 'sonner';
 
-export interface StoredImage {
-    id?: number;
-    name: string;
-    base64: string;
-    type: string;
-    date: Date;
-}
-
-class ImageDB {
+class Database {
     private dbName = 'snapresize_db';
-    private storeName = 'images';
+    private imageStore = 'images';
+    private settingStore = 'settings';
     private db: IDBDatabase | null = null;
 
     async init(): Promise<void> {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(this.dbName, 11);
 
-            request.onerror = () => {
-                reject(request.error);
-            };
-
+            request.onerror = () => reject(request.error);
             request.onsuccess = () => {
                 this.db = request.result;
                 resolve();
@@ -28,12 +19,28 @@ class ImageDB {
 
             request.onupgradeneeded = (event) => {
                 const db = (event.target as IDBOpenDBRequest).result;
-                if (!db.objectStoreNames.contains(this.storeName)) {
-                    const store = db.createObjectStore(this.storeName, {
+
+                // Create images store if it doesn't exist
+                if (!db.objectStoreNames.contains(this.imageStore)) {
+                    const imageStore = db.createObjectStore(this.imageStore, {
                         keyPath: 'id',
                         autoIncrement: true,
                     });
-                    store.createIndex('date', 'date', { unique: false });
+                    imageStore.createIndex('date', 'date', { unique: false });
+                }
+
+                // Create settings store if it doesn't exist
+                if (!db.objectStoreNames.contains(this.settingStore)) {
+                    const settingStore = db.createObjectStore(this.settingStore, {
+                        keyPath: 'id',
+                        autoIncrement: true,
+                    });
+                    // Add default settings
+                    settingStore.add({
+                        id: 1,
+                        size: 400,
+                        quality: 0.8,
+                    });
                 }
             };
         });
@@ -41,11 +48,63 @@ class ImageDB {
 
     async saveImage(imageData: StoredImage): Promise<number> {
         if (!this.db) await this.init();
-
         return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction(this.storeName, 'readwrite');
-            const store = transaction.objectStore(this.storeName);
+            const transaction = this.db!.transaction(this.imageStore, 'readwrite');
+            const store = transaction.objectStore(this.imageStore);
             const request = store.add(imageData);
+
+            request.onsuccess = () => resolve(request.result as number);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async getAllImages(): Promise<StoredImage[]> {
+        if (!this.db) await this.init();
+        return new Promise((resolve, reject) => {
+            const transaction = this.db!.transaction(this.imageStore, 'readonly');
+            const store = transaction.objectStore(this.imageStore);
+            const request = store.getAll();
+
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async getLatestImage(): Promise<StoredImage | null> {
+        if (!this.db) await this.init();
+        return new Promise((resolve, reject) => {
+            const transaction = this.db!.transaction(this.imageStore, 'readonly');
+            const store = transaction.objectStore(this.imageStore);
+            const index = store.index('date');
+            const request = index.openCursor(null, 'prev');
+
+            request.onsuccess = () => {
+                const cursor = request.result;
+                resolve(cursor ? cursor.value : null);
+            };
+
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async deleteImage(id: number): Promise<void> {
+        if (!this.db) await this.init();
+        return new Promise((resolve, reject) => {
+            const transaction = this.db!.transaction(this.imageStore, 'readwrite');
+            const store = transaction.objectStore(this.imageStore);
+            const request = store.delete(id);
+
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async saveSetting(settingData: StoredSetting): Promise<number> {
+        if (!this.db) await this.init();
+        return new Promise((resolve, reject) => {
+            const transaction = this.db!.transaction(this.settingStore, 'readwrite');
+            const store = transaction.objectStore(this.settingStore);
+            const request = store.put(settingData);
 
             request.onsuccess = () => {
                 resolve(request.result as number);
@@ -53,70 +112,22 @@ class ImageDB {
 
             request.onerror = () => {
                 reject(request.error);
+                toast.error('Setting not saved');
             };
         });
     }
 
-    async getAllImages(): Promise<StoredImage[]> {
+    async getSetting(): Promise<StoredSetting | null> {
         if (!this.db) await this.init();
-
         return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction(this.storeName, 'readonly');
-            const store = transaction.objectStore(this.storeName);
-            const request = store.getAll();
+            const transaction = this.db!.transaction(this.settingStore, 'readonly');
+            const store = transaction.objectStore(this.settingStore);
+            const request = store.get(1);
 
-            request.onsuccess = () => {
-                resolve(request.result);
-            };
-
-            request.onerror = () => {
-                reject(request.error);
-            };
-        });
-    }
-
-    async getLatestImage(): Promise<StoredImage | null> {
-        if (!this.db) await this.init();
-
-        return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction(this.storeName, 'readonly');
-            const store = transaction.objectStore(this.storeName);
-            const index = store.index('date');
-
-            const request = index.openCursor(null, 'prev');
-
-            request.onsuccess = () => {
-                const cursor = request.result;
-                if (cursor) {
-                    resolve(cursor.value);
-                } else {
-                    resolve(null);
-                }
-            };
-
-            request.onerror = () => {
-                reject(request.error);
-            };
-        });
-    }
-
-    async deleteImage(id: number): Promise<void> {
-        if (!this.db) await this.init();
-
-        return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction(this.storeName, 'readwrite');
-            const store = transaction.objectStore(this.storeName);
-            const request = store.delete(id);
-
-            request.onsuccess = () => {
-                resolve();
-            };
-
-            request.onerror = () => {
-                reject(request.error);
-            };
+            request.onsuccess = () => resolve(request.result ?? null);
+            request.onerror = () => reject(request.error);
         });
     }
 }
 
-export const imageDB = new ImageDB();
+export const DB = new Database();

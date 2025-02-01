@@ -3,12 +3,14 @@ import { PageHeader, PageHeaderHeading } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Slider } from '@/components/ui/slider';
 import { useImageProcessing } from '@/hooks/useImageProcessing';
 import { useImageSlider } from '@/hooks/useImageSlider';
 import { downloadFile } from '@/lib/imageUtils';
+import { DB } from '@/lib/indexDBUtils';
 import { EllipsisVertical, ImagePlus, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 const ImageUploader: React.FC = () => {
@@ -23,10 +25,27 @@ const ImageUploader: React.FC = () => {
 
     const { sliderRef, sliderPosition, handleMouseDown, handleTouchStart } = useImageSlider();
 
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const settings = await DB.getSetting();
+                if (settings) {
+                    setSize(settings.size);
+                    setQuality(settings.quality);
+                }
+            } catch (error) {
+                console.error('Failed to load settings:', error);
+            }
+        };
+
+        fetchSettings();
+    }, []);
+
     const downloadImage = (format: string = 'image/jpeg') => {
         if (!processedImage) return;
         const extension = format.split('/')[1];
-        const fileName = `processed-image.${extension}`;
+        const timestamp = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+        const fileName = `snap-to-${extension}-${timestamp}.${extension}`;
         downloadFile(processedImage.blob, fileName);
         toast.success('Image downloaded successfully');
     };
@@ -38,7 +57,7 @@ const ImageUploader: React.FC = () => {
     };
 
     return (
-        <div>
+        <ScrollArea className="h-[calc(100vh-150px)]">
             <PageHeader>
                 <PageHeaderHeading className="flex w-full justify-between">Image Resizer & Converter</PageHeaderHeading>
             </PageHeader>
@@ -125,7 +144,7 @@ const ImageUploader: React.FC = () => {
                             id="size"
                             value={[size]}
                             min={50}
-                            max={800}
+                            max={1200}
                             step={50}
                             onValueChange={(value) => setSize(value[0])}
                         />
@@ -147,7 +166,7 @@ const ImageUploader: React.FC = () => {
                             </Button>
                             <Button
                                 size="sm"
-                                className="bg-yellow -500"
+                                className="bg-yellow-500"
                                 onClick={() => downloadImage('image/jpeg')}
                                 disabled={!processedImage}
                             >
@@ -173,6 +192,7 @@ const ImageUploader: React.FC = () => {
                         </div>
                     </div>
                 </CardContent>
+
                 <CardFooter className="flex flex-col">
                     <div className="my-4 flex w-full items-center gap-x-2">
                         <div className="flex-grow border-t border-slate-400"></div>
@@ -193,7 +213,7 @@ const ImageUploader: React.FC = () => {
                     </Button>
                 </CardFooter>
             </Card>
-        </div>
+        </ScrollArea>
     );
 };
 

@@ -1,4 +1,4 @@
-import { Icons } from '@/components/icons';
+import { BookImage, Camera, LucideIcon, Settings } from 'lucide-react';
 
 interface NavItem {
     title: string | null;
@@ -7,7 +7,7 @@ interface NavItem {
     disabled?: boolean;
     external?: boolean;
     isCustomMenu?: boolean;
-    icon?: keyof typeof Icons;
+    icon?: LucideIcon;
     label?: string;
 }
 
@@ -18,39 +18,18 @@ interface NavItemWithChildren extends NavItem {
 export const sidebarMenu: NavItemWithChildren[] = [
     {
         title: 'Dashboard',
-        to: '',
+        to: '/',
+        icon: BookImage,
     },
     {
-        title: 'Keranjang',
-        to: '/carts',
-    },
-    {
-        title: 'Menu ',
-        items: [
-            {
-                title: 'Tambah Data ',
-                to: 'master-data/products',
-                isCustomMenu: true,
-            },
-        ],
-        isCustomMenu: true,
-    },
-    {
-        title: 'Menu Transaksi',
-        items: [
-            {
-                title: 'Riwayat Transaksi',
-                to: '/history-transactions',
-            },
-            {
-                title: 'Cetak Transaksi',
-                to: '/not-found',
-            },
-        ],
+        title: 'Camera',
+        to: '/cameras',
+        icon: Camera,
     },
     {
         title: 'Setting',
         to: '/settings',
+        icon: Settings,
     },
 ];
 

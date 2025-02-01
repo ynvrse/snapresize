@@ -48,7 +48,9 @@ export const processImage = async (
 
     // Resize image using pica
     await pica.resize(sourceImage, canvas, {
-        unsharpAmount: 80,
+        quality: 3,
+        filter: 'lanczos3',
+        unsharpAmount: 160,
         unsharpRadius: 0.6,
         unsharpThreshold: 2,
     });
