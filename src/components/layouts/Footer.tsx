@@ -11,7 +11,7 @@ export function Footer() {
         <footer>
             <div className="fixed bottom-0 left-0 w-full">
                 <div className="mx-auto">
-                    <nav className="nav-mobile bg-primary flex items-center justify-center gap-x-20 rounded-t-md px-4 py-2">
+                    <nav className="nav-mobile bg-primary flex w-full items-center justify-center gap-x-20 px-4 py-2">
                         <NavLink to="/saved-images">
                             <Avatar className="h-8 w-8 !rounded-md">
                                 <AvatarImage src={latestImage?.base64} className="!rounded-md" />
