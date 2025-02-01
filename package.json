@@ -1,9 +1,9 @@
 {
-    "name": "stellaryst",
+    "name": "SnapResize",
     "private": true,
     "version": "0.1",
     "type": "module",
-    "homepage": "https://ynvrse.github.io/stellaryst",
+    "homepage": "https://ynvrse.github.io/snapresize",
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",

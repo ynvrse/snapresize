@@ -18,8 +18,8 @@ export default defineConfig(({ command }) => {
                     globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
                 },
                 manifest: {
-                    name: 'Stellaryst',
-                    short_name: 'Stellaryst',
+                    name: 'SnapResize',
+                    short_name: 'SnapResize',
                     theme_color: '#ffffff',
                     background_color: '#ffffff',
                     display: 'fullscreen',
