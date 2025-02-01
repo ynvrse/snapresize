@@ -1,7 +1,7 @@
 // ImageUploader.tsx
 import { PageHeader, PageHeaderHeading } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { useImageProcessing } from '@/hooks/useImageProcessing';
@@ -9,15 +9,17 @@ import { useImageSlider } from '@/hooks/useImageSlider';
 import { downloadFile } from '@/lib/imageUtils';
 import { EllipsisVertical, ImagePlus, X } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const ImageUploader: React.FC = () => {
     const [size, setSize] = useState<number>(400);
     const [quality, setQuality] = useState<number>(0.6);
 
-    const { imgTemp, originalFile, isProcessing, processedImage, handleFileChange, handleReset } = useImageProcessing({
-        size,
-        quality,
-    });
+    const { imgTemp, originalFile, isProcessing, processedImage, handleSaveProcessed, handleFileChange, handleReset } =
+        useImageProcessing({
+            size,
+            quality,
+        });
 
     const { sliderRef, sliderPosition, handleMouseDown, handleTouchStart } = useImageSlider();
 
@@ -26,11 +28,13 @@ const ImageUploader: React.FC = () => {
         const extension = format.split('/')[1];
         const fileName = `processed-image.${extension}`;
         downloadFile(processedImage.blob, fileName);
+        toast.success('Image downloaded successfully');
     };
 
     const downloadOriginal = () => {
         if (!originalFile) return;
         downloadFile(originalFile, originalFile.name);
+        toast.success('Original image downloaded successfully');
     };
 
     return (
@@ -47,10 +51,10 @@ const ImageUploader: React.FC = () => {
                                 <Button
                                     variant="destructive"
                                     size="icon"
-                                    className="absolute top-0 right-0 z-10 cursor-pointer"
+                                    className="absolute -top-3 -right-3 z-10 cursor-pointer rounded-full"
                                     onClick={handleReset}
                                 >
-                                    <X />
+                                    <X color="white" />
                                 </Button>
                             )}
                             <label
@@ -138,12 +142,12 @@ const ImageUploader: React.FC = () => {
 
                         <Label htmlFor="download">Download</Label>
                         <div id="download" className="flex gap-x-2">
-                            <Button size="sm" onClick={downloadOriginal} disabled={!originalFile}>
+                            <Button size="sm" variant="outline" onClick={downloadOriginal} disabled={!originalFile}>
                                 Original
                             </Button>
                             <Button
-                                className="bg-accent text-black"
                                 size="sm"
+                                className="bg-yellow -500"
                                 onClick={() => downloadImage('image/jpeg')}
                                 disabled={!processedImage}
                             >
@@ -169,6 +173,25 @@ const ImageUploader: React.FC = () => {
                         </div>
                     </div>
                 </CardContent>
+                <CardFooter className="flex flex-col">
+                    <div className="my-4 flex w-full items-center gap-x-2">
+                        <div className="flex-grow border-t border-slate-400"></div>
+                        <span className="text-sm text-gray-500">atau</span>
+                        <div className="flex-grow border-t border-slate-400"></div>
+                    </div>
+
+                    <Button
+                        className="w-full"
+                        size="sm"
+                        onClick={() => {
+                            handleSaveProcessed();
+                            handleReset();
+                        }}
+                        disabled={!processedImage}
+                    >
+                        Save to galery
+                    </Button>
+                </CardFooter>
             </Card>
         </div>
     );

@@ -1,6 +1,8 @@
-// useImageProcessing.ts
+// src/hooks/useImageProcessing.ts
+import { useStoredImages } from '@/hooks/useStoredImage';
 import { cleanupURLs, ProcessedImage, processImage } from '@/lib/imageUtils';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 interface UseImageProcessingProps {
     size: number;
@@ -11,7 +13,9 @@ export const useImageProcessing = ({ size, quality }: UseImageProcessingProps) =
     const [imgTemp, setImgTemp] = useState<string | null>(null);
     const [originalFile, setOriginalFile] = useState<File | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
-    const [processedImage, setProcessedImage] = useState<ProcessedImage | null>();
+    const [processedImage, setProcessedImage] = useState<ProcessedImage | null>(null);
+
+    const { saveImageToStore } = useStoredImages();
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -32,6 +36,31 @@ export const useImageProcessing = ({ size, quality }: UseImageProcessingProps) =
             console.error('Error processing image:', error);
         } finally {
             setIsProcessing(false);
+        }
+    };
+
+    const handleSaveProcessed = async () => {
+        if (!processedImage || !originalFile) return;
+
+        try {
+            await saveImageToStore(processedImage.blob, `processed_${originalFile.name}`, processedImage.blob.type);
+            toast.success('Image saved successfully!');
+            return true;
+        } catch (error) {
+            console.error('Error saving processed image:', error);
+            return false;
+        }
+    };
+
+    const handleSaveOriginal = async () => {
+        if (!originalFile) return;
+
+        try {
+            await saveImageToStore(originalFile, originalFile.name, originalFile.type);
+            return true;
+        } catch (error) {
+            console.error('Error saving original image:', error);
+            return false;
         }
     };
 
@@ -63,5 +92,7 @@ export const useImageProcessing = ({ size, quality }: UseImageProcessingProps) =
         processedImage,
         handleFileChange,
         handleReset,
+        handleSaveOriginal,
+        handleSaveProcessed,
     };
 };

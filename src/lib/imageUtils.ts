@@ -12,6 +12,22 @@ export interface ProcessedImage {
     height: number;
 }
 
+export const blobToBase64 = (blob: Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            resolve(reader.result as string);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+};
+
+export const base64ToBlob = async (base64: string): Promise<Blob> => {
+    const response = await fetch(base64);
+    return response.blob();
+};
+
 export const processImage = async (
     file: File,
     targetWidth: number,
